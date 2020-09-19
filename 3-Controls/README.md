@@ -22,15 +22,15 @@ Simulation #1 (../config/1_Intro.txt)
 PASS: ABS(Quad.PosFollowErr) was less than 0.500000 for at least 0.800000 seconds
 ```
 
-
 ### Scenario 2
 
 First we implemented the body rate control and tuned ```kpPQR```. After that we proceeded with the implementation of the roll/pitch control and the tuning of ```kpBank```.
-A reminder of how the quadcopter looks like:
+A reminder of how the quadcopter looks like:<br/>
 ![drone][drone]
-Now based on the input from the controller we can set the angular velocities of the propellers. For this, we would like to solve the next linear equation. The first row represents the vertical acceleration, the second represents the equation for roll, the third row is the pitch equation, and the last one is derived from the yaw equation:
-![equation1][formula2]
+<br/>Now based on the input from the controller we can set the angular velocities of the propellers. For this, we would like to solve the next linear equation. The first row represents the vertical acceleration, the second represents the equation for roll, the third row is the pitch equation, and the last one is derived from the yaw equation:<br/>
 
+![equation1][formula2]
+<br/>
 ![scenario2][scenario2]
 
 ```
@@ -42,7 +42,9 @@ PASS: ABS(Quad.Omega.X) was less than 2.500000 for at least 0.750000 seconds
 
 ### Scenario 3
 For this task we implement the position, altitude and yaw controls and start tuning other parameters as ```kpPosZ```, ```kpVelXY```, ```kpVelZ```, ```kpPQR```, ```kpYaw```.
+
 ![equation2][formula3]
+
 We based this approach on the formula (see reference 1).
 
 
@@ -96,7 +98,7 @@ Ratio](./resources/Double_Integrator_Control_paper.pdf)
 
 
 [//]: # (References)
-[architecture]: ./img/architecture.jpg
+[architecture]: ./img/architecture.PNG
 [drone]: ./img/drone.PNG
 [formula2]: ./img/formula2.PNG
 [formula3]: ./img/formula3.PNG
@@ -106,4 +108,3 @@ Ratio](./resources/Double_Integrator_Control_paper.pdf)
 [scenario4]: ./img/scenario4.gif
 [scenario5]: ./img/scenario5.gif
 [scenario6]: ./img/scenario6.gif
-
