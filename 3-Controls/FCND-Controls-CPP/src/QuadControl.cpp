@@ -70,10 +70,21 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
-  cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
-  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
-  cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
-  cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
+    float len = L / (2.f * sqrtf(2.f));
+    float p_bar = momentCmd.x / len; // x axis
+    float q_bar = momentCmd.y / len; // y axis 
+    float r_bar = -momentCmd.z / kappa; // z axis
+    float c_bar = collThrustCmd;
+
+    float f0 = (c_bar + p_bar + q_bar + r_bar) / 4.f; // Front left
+    float f1 = (c_bar - p_bar + q_bar - r_bar) / 4.f; // Front right 
+    float f2 = (c_bar + p_bar - r_bar - q_bar) / 4.f; //Rear left 
+    float f3 = (c_bar - p_bar - q_bar + r_bar) / 4.f; //Rear right  
+
+    cmd.desiredThrustsN[0] = CONSTRAIN(f0, minMotorThrust, maxMotorThrust); // front left
+    cmd.desiredThrustsN[1] = CONSTRAIN(f1, minMotorThrust, maxMotorThrust); // front right
+    cmd.desiredThrustsN[2] = CONSTRAIN(f2, minMotorThrust, maxMotorThrust); // rear left
+    cmd.desiredThrustsN[3] = CONSTRAIN(f3, minMotorThrust, maxMotorThrust); // rear right
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -98,7 +109,11 @@ V3F QuadControl::BodyRateControl(V3F pqrCmd, V3F pqr)
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
-  
+
+  V3F I(Ixx, Iyy, Izz);
+  V3F difference = pqrCmd - pqr;
+
+  momentCmd = I * kpPQR * difference;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -129,7 +144,17 @@ V3F QuadControl::RollPitchControl(V3F accelCmd, Quaternion<float> attitude, floa
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
+  auto collThrustAcc = -collThrustCmd / mass;
 
+  auto b_x_c = CONSTRAIN(accelCmd.x / collThrustAcc, -maxTiltAngle, maxTiltAngle);
+  auto b_y_c = CONSTRAIN(accelCmd.y / collThrustAcc, -maxTiltAngle, maxTiltAngle);
+
+  auto b_x_term = kpBank * (b_x_c - R(0, 2));
+  auto b_y_term = kpBank * (b_y_c - R(1, 2));
+
+  pqrCmd.x = (R(1, 0) * b_x_term - R(0, 0) * b_y_term) / R(2, 2);
+  pqrCmd.y = (R(1, 1) * b_x_term - R(0, 1) * b_y_term) / R(2, 2);
+  pqrCmd.z = 0.f;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -161,7 +186,18 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
+  
 
+  auto p_control = kpPosZ * (posZCmd - posZ);
+  auto d_control = kpPosZ * (velZCmd - velZ);
+
+  integratedAltitudeError += (posZCmd - posZ) * dt;
+  auto i_control = KiPosZ * integratedAltitudeError;
+
+  auto u_bar = p_control + d_control + i_control + accelZCmd;
+  float accel = (u_bar - CONST_GRAVITY) / R(2, 2);
+
+  thrust = -mass * CONSTRAIN(accel, -maxDescentRate / dt, maxAscentRate / dt);
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
   
@@ -199,8 +235,18 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
-  
+  velCmd.x = CONSTRAIN(velCmd.x, -maxSpeedXY, maxSpeedXY);
+  velCmd.y = CONSTRAIN(velCmd.y, -maxSpeedXY, maxSpeedXY);
 
+  auto pos_err = posCmd - pos;
+  auto vel_err = velCmd - vel;
+
+  accelCmd += kpPosXY * pos_err + kpVelXY * vel_err;
+
+  accelCmd.x = CONSTRAIN(accelCmd.x, -maxAccelXY, maxAccelXY);
+  accelCmd.y = CONSTRAIN(accelCmd.y, -maxAccelXY, maxAccelXY);
+  accelCmd.z = 0;
+  
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
   return accelCmd;
@@ -221,6 +267,20 @@ float QuadControl::YawControl(float yawCmd, float yaw)
 
   float yawRateCmd=0;
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+
+  auto restr_yawCmd = fmodf(yawCmd, 2.f * F_PI);
+  auto yaw_err = restr_yawCmd - yaw;
+
+  if (yaw_err > F_PI)
+  {
+      yaw_err = yaw_err - 2.f * F_PI;
+  }
+  else if (yaw_err < -F_PI)
+  {
+      yaw_err = yaw_err + 2.f * F_PI;
+  }
+
+  yawRateCmd = kpYaw * yaw_err;
 
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
