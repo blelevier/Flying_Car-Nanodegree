@@ -8,7 +8,7 @@ The simulator covers six scenarios where we can test our functions.
 
 ### Scenario 6: Sensor Noise
 
-Analyze the date and update the parameters ```MeasuredStdDev_GPSPosXY``` and ```MeasuredStdDev_AccelXY``` in ```./FCND-Estimation-CPP/config/6_Sensornoise.txt```.
+Analyze the data and update the parameters ```MeasuredStdDev_GPSPosXY``` and ```MeasuredStdDev_AccelXY``` in ```./FCND-Estimation-CPP/config/6_Sensornoise.txt```.
 
 ![scenario6][scenario6]
 
@@ -31,7 +31,7 @@ PASS: ABS(Quad.Est.E.MaxEuler) was less than 0.100000 for at least 3.000000 seco
 
 ### Scenario 8: Prediction Step
 
-This is the prediction step of the EKF filter, covered in ```PredictState()```. The transitional function calculates the first six states (pose and velocities from equation 36).
+This is the prediction step of the EKF filter, covered in ```PredictState()```. The transitional function calculates the first six states (pose and velocities from equation 36).</br>
 ![equation36][equation36]
 </br>
 ![scenario8][scenario8]
