@@ -51,10 +51,11 @@ NORTH_WEST = (-1, -1, np.sqrt(2))
 NORTH_EAST = (-1, 1, np.sqrt(2))
 SOUTH_WEST = (1, -1, np.sqrt(2))
 SOUTH_EAST = (1, 1, np.sqrt(2))
-```</br>
-And to review the diagonal motion:
 ```
-if (x - 1 < 0 or y - 1 < 0) or grid[x - 1, y - 1] == 1:
+</br>
+And to review the diagonal motion:
+
+```if (x - 1 < 0 or y - 1 < 0) or grid[x - 1, y - 1] == 1:
     valid_actions.remove(Action.NORTH_WEST)
 if (x - 1 < 0 or y + 1 > m) or grid[x - 1, y + 1] == 1:
     valid_actions.remove(Action.NORTH_EAST)
@@ -62,7 +63,8 @@ if (x + 1 > n or y - 1 < 0) or grid[x + 1, y - 1] == 1:
     valid_actions.remove(Action.SOUTH_WEST)
 if (x + 1 > n or y + 1 > m) or grid[x + 1, y + 1] == 1:
     valid_actions.remove(Action.SOUTH_EAST)
-```</br>
+```
+
 
 #### 6. Cull waypoints 
 A collinearity test was used in this method within the function ```prune_path()```. The determinant of the matrix containing these three points (p1,p2,p3) must be equal to zero in 3 dimensions. If in two dimensions, the z coordinate is set to one and the determinant is zero, that's sufficient for collinearity.
@@ -70,7 +72,8 @@ A collinearity test was used in this method within the function ```prune_path()`
 ### Execute the flight
 #### 1. Does it work?
 It works!
-![simulation][simulation]
+You can see the video [here](https://drive.google.com/file/d/10rTnAqgG4Ue5qbIvtLLq5fJBzUvLsvBD/view?usp=sharing).
+
 
 [//]: # (References)
 [simulation]: ./img/simulation.gif
